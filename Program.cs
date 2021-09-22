@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.IO;
-using System.Text.Json;
 using System.Security.Cryptography;
 
 namespace srun_login
@@ -145,11 +144,7 @@ namespace srun_login
 
         private static string CalcInfo(Info data, string key)
         {
-            var options = new JsonSerializerOptions
-            {
-                IncludeFields = true
-            };
-            string jsonString = JsonSerializer.Serialize(data, options);
+            string jsonString = data.ToJsonString();
 
             string xString = XEncode.Encode(jsonString, key);
 
