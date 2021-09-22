@@ -29,17 +29,10 @@ namespace srun_login
             Setup();
 
             await GetChallenge();
-            //GetChallengeDebug();
 
             await Login();
 
             Console.ReadKey();
-        }
-
-        private static void GetChallengeDebug()
-        {
-            userIp = "10.249.69.46";
-            challenge = "f7551d6e9f2e2cef4d4023eccf6df820aca2c02f73ea17b0f4ce4a9f6886c3c1";
         }
 
         private static void Setup()
@@ -52,7 +45,6 @@ namespace srun_login
                 password = sr.ReadLine().Trim();
             }
 
-            //Console.WriteLine(client.DefaultRequestHeaders);
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01");
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
@@ -63,7 +55,6 @@ namespace srun_login
             client.DefaultRequestHeaders.Add("Referer", "http://10.248.98.2/srun_portal_pc?ac_id=1&theme=basic2");
             client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0");
             client.DefaultRequestHeaders.Add("X-Requested-With", "XMLHttpRequest");
-            //Console.WriteLine(client.DefaultRequestHeaders);
         }
 
         private static async Task GetChallenge()
@@ -73,7 +64,6 @@ namespace srun_login
                 + $"&_={DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
             string responseBody = await client.GetStringAsync(baseUrl + "/cgi-bin/get_challenge" + param);
             string jsonString = responseBody.Split(new char[] { '(', ')' })[1];
-            Console.WriteLine(jsonString);
 
             foreach (var pair in jsonString.Split(','))
             {
@@ -86,7 +76,9 @@ namespace srun_login
                     userIp = pair.Split(':')[1].Trim('\"');
                 }
             }
-            Console.WriteLine($"{challenge}, {userIp}");
+
+            Console.WriteLine($"challenge = {challenge}");
+            Console.WriteLine($"IP = {userIp}");
         }
 
         private static async Task Login()
@@ -125,18 +117,15 @@ namespace srun_login
                 + $"&name=Windows"
                 + $"&double_stack=0"
                 + $"&_={DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
-
-            Console.WriteLine("\n" + param + "\n");
             
             string responseBody = await client.GetStringAsync(baseUrl + "/cgi-bin/srun_portal" + param);
             string jsonString = responseBody.Split(new char[] { '(', ')' })[1];
-            Console.WriteLine(jsonString);
 
             foreach (var pair in jsonString.Split(','))
             {
                 if (pair.Contains("error"))
                 {
-                    Console.WriteLine(pair.Split(':')[1].Trim('\"'));
+                    Console.WriteLine($"result = {pair.Split(':')[1].Trim('\"')}");
                     break;
                 }
             }
